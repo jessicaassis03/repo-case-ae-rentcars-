@@ -81,7 +81,7 @@ Deduplicação: distinct aplicado em staging e incremental.
 🚨 Limitações Conhecidas
 Dados contêm duplicatas e outliers intencionais (fraude, valores negativos).
 
-Não foi implementada anonimização avançada de PII (apenas mascaramento básico).
+Não foi implementada anonimização avançada de PII (básico).
 
 O dashboard foi construído em Power BI; exportado em PDF para entrega.
 
