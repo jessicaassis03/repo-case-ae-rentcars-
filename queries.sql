@@ -1,119 +1,92 @@
--- =========================================
--- Q1: Funil de Conversão por país e device
--- =========================================
-WITH sessions AS (
-    SELECT DISTINCT session_id, country, device
-    FROM fct_sessions
-),
-searches AS (
-    SELECT DISTINCT session_id FROM stg_searches
-),
-bookings AS (
-    SELECT DISTINCT session_id FROM fct_bookings
-)
-
-SELECT
+-- Query cobrindo as 5 perguntas do negócio
+-- Q1: Taxa de conversão por funil (sessão → busca → reserva), segmentada por país e device
+-- Lógica: contar sessões, buscas e reservas distintas e calcular proporções
+select
     s.country,
-    s.device,
-    COUNT(DISTINCT s.session_id) AS total_sessions,
-    COUNT(DISTINCT se.session_id) AS total_searches,
-    COUNT(DISTINCT b.session_id) AS total_bookings,
-    ROUND(COUNT(DISTINCT b.session_id) * 1.0 / COUNT(DISTINCT s.session_id), 4) AS conversion_rate
-FROM sessions s
-LEFT JOIN searches se USING(session_id)
-LEFT JOIN bookings b USING(session_id)
-GROUP BY s.country, s.device
-ORDER BY conversion_rate DESC;
+    lower(s.device) as device,
+    count(distinct s.session_id) as total_sessions,
+    count(distinct se.search_id) as total_searches,
+    count(distinct b.booking_id) as total_bookings,
+    round(count(distinct b.booking_id)::numeric / nullif(count(distinct s.session_id),0), 4) as conversion_rate
+from raw_sessions s
+left join raw_searches se on s.session_id = se.session_id
+left join raw_bookings b on s.session_id = b.session_id
+where s.is_bot = false
+group by s.country, lower(s.device)
+order by conversion_rate desc;
 
+-- Q2: Top 10 parceiros por receita nos últimos 90 dias, excluindo cancelamentos
+-- Lógica: somar total_amount apenas para reservas confirmadas ou concluídas
+select
+    p.partner_name,
+    sum(b.total_amount) as revenue
+from raw_bookings b
+join raw_partners p on b.partner_id = p.partner_id
+where b.status in ('confirmed','completed')
+  and b.booked_at >= current_date - interval '90 days'
+group by p.partner_name
+order by revenue desc
+limit 10;
 
--- =========================================
--- Q2: Top 10 parceiros por receita (90 dias)
--- =========================================
-SELECT
-    partner_id,
-    SUM(total_amount) AS revenue
-FROM fct_bookings
-WHERE created_at >= CURRENT_DATE - INTERVAL '90 days'
-  AND is_canceled = 0
-GROUP BY partner_id
-ORDER BY revenue DESC
-LIMIT 10;
-
-
--- =========================================
--- Q3: LTV por cohort
--- =========================================
-WITH first_touch AS (
-    SELECT
+-- Q3: LTV (Lifetime Value) dos usuários agrupados por cohort de primeiro acesso (mês/ano)
+-- Lógica: identificar primeira reserva do usuário e agrupar por cohort
+with first_booking as (
+    select
         user_id,
-        MIN(session_start) AS first_seen
-    FROM fct_sessions
-    GROUP BY user_id
+        min(booked_at) as first_access
+    from raw_bookings
+    where user_id is not null
+    group by user_id
 ),
-
-cohort AS (
-    SELECT
-        user_id,
-        DATE_TRUNC('month', first_seen) AS cohort_month
-    FROM first_touch
-),
-
-ltv AS (
-    SELECT
-        b.user_id,
-        SUM(b.total_amount) AS total_ltv
-    FROM fct_bookings b
-    WHERE is_canceled = 0
-    GROUP BY b.user_id
+cohorts as (
+    select
+        fb.user_id,
+        date_trunc('month', fb.first_access) as cohort_month,
+        sum(b.total_amount) as ltv
+    from first_booking fb
+    join raw_bookings b on fb.user_id = b.user_id
+    where b.status in ('confirmed','completed')
+    group by fb.user_id, cohort_month
 )
+select cohort_month, avg(ltv) as avg_ltv
+from cohorts
+group by cohort_month
+order by cohort_month;
 
-SELECT
-    c.cohort_month,
-    AVG(l.total_ltv) AS avg_ltv
-FROM cohort c
-LEFT JOIN ltv l USING(user_id)
-GROUP BY c.cohort_month
-ORDER BY c.cohort_month;
+-- Q4: Detecção de sessões suspeitas de bot — mais de 50 buscas em uma janela de 5 minutos
+-- Lógica: contar buscas por sessão em intervalos de 5 minutos
+select
+    se.session_id,
+    count(se.search_id) as num_searches,
+    min(se.searched_at) as first_search,
+    max(se.searched_at) as last_search
+from raw_searches se
+group by se.session_id
+having count(se.search_id) > 50
+   and (max(se.searched_at) - min(se.searched_at)) <= interval '5 minutes';
 
-
--- =========================================
--- Q4: Sessões suspeitas de bot
--- =========================================
-SELECT
-    session_id,
-    DATE_TRUNC('minute', search_time) AS minute_window,
-    COUNT(*) AS searches
-FROM stg_searches
-GROUP BY session_id, minute_window
-HAVING COUNT(*) > 50
-ORDER BY searches DESC;
-
-
--- =========================================
--- Q5: Taxa de cancelamento + outliers
--- =========================================
-WITH cancel_rate AS (
-    SELECT
-        partner_id,
-        COUNT(*) FILTER (WHERE is_canceled = 1) * 1.0 / COUNT(*) AS cancel_rate
-    FROM fct_bookings
-    GROUP BY partner_id
+-- Q5: Taxa de cancelamento por parceiro com identificação de outliers estatísticos (> 2σ)
+-- Lógica: calcular taxa de cancelamento e marcar outliers
+with cancel_rate as (
+    select
+        b.partner_id,
+        count(c.cancellation_id)::float / nullif(count(b.booking_id),0) as cancellation_rate
+    from raw_bookings b
+    left join raw_cancellations c on b.booking_id = c.booking_id
+    where b.status = 'confirmed'
+    group by b.partner_id
 ),
-
-stats AS (
-    SELECT
-        AVG(cancel_rate) AS avg_rate,
-        STDDEV(cancel_rate) AS stddev_rate
-    FROM cancel_rate
+stats as (
+    select
+        avg(cancellation_rate) as mean_rate,
+        stddev(cancellation_rate) as std_rate
+    from cancel_rate
 )
-
-SELECT
-    c.partner_id,
-    c.cancel_rate,
-    CASE
-        WHEN c.cancel_rate > s.avg_rate + 2 * s.stddev_rate THEN 'OUTLIER'
-        ELSE 'NORMAL'
-    END AS classification
-FROM cancel_rate c
-CROSS JOIN stats s
-ORDER BY c.cancel_rate DESC;
+select
+    p.partner_name,
+    cr.cancellation_rate,
+    case when cr.cancellation_rate > (s.mean_rate + 2*s.std_rate) then 'outlier' else 'normal' end as flag
+from cancel_rate cr
+join raw_partners p on cr.partner_id = p.partner_id
+cross join stats s
+order by cr.cancellation_rate desc;
