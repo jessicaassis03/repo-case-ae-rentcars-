@@ -26,6 +26,30 @@ fct_bookings ────────────────┘
 raw_cancellations
 
 
+(diagrama de relacionamento entre tabelas (ERD simplificado), representando como os dados foram modelados no projeto dbt/marts. Vamos destrinchar:
+
+dim_partners  
+É a dimensão de parceiros (locadoras). Contém atributos descritivos como nome, país, tier e status.
+→ Serve para enriquecer análises de reservas e sessões com informações sobre os parceiros.
+
+dim_users  
+É a dimensão de usuários. Agrupa atributos como user_id, cohort de primeiro acesso, país de origem.
+→ Permite análises de comportamento e métricas de LTV por usuário.
+
+fct_sessions  
+É a tabela fato de sessões. Cada linha representa uma sessão de navegação no site.
+→ Conecta-se a buscas e reservas via session_id.
+
+fct_bookings  
+É a tabela fato de reservas. Cada linha representa uma reserva concluída.
+→ Conecta-se a sessões via session_id e a parceiros via partner_id.
+→ É a principal tabela de receita e conversão.
+
+raw_cancellations  
+É a tabela bruta de cancelamentos. Relaciona-se diretamente com fct_bookings via booking_id.
+→ Permite calcular taxa de cancelamento, reembolsos e motivos.)
+
+
 Decisões Técnicas
 Star schema: adotado para clareza e performance em análises.
 
