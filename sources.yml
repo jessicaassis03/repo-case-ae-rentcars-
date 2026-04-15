@@ -1,0 +1,11 @@
+-- Modelagem de Dados com DBT
+
+sources:
+  - name: rentcars
+    schema: raw
+    tables:
+      - name: raw_partners
+      - name: raw_sessions
+      - name: raw_searches
+      - name: raw_bookings
+      - name: raw_cancellations
