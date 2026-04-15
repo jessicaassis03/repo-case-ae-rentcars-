@@ -42,15 +42,15 @@ Pseudonimização: substituir por código interno
 🚨 Problemas de Qualidade Identificados
 #	Tabela	Tipo de Problema	Descrição
 1	Todas	Duplicatas	Registros idênticos inseridos propositalmente
-2	raw_sessions	Inconsistência de case	device: desktop / DESKTOP / Mobile
-3	raw_sessions	Outlier temporal	Sessões > 24h
-4	raw_searches	Bot/fraude	65 buscas em < 4 min
-5	raw_searches	Anomalia lógica	dropoff_date < pickup_date
-6	raw_bookings	Outlier de valor	total_amount negativo, zerado ou > R$15.000
-7	raw_bookings	Fraude potencial	1 user_id com 4 reservas no mesmo dia
-8	raw_partners	Duplicatas	Parceiros repetidos
-9	raw_partners	Inconsistência de case	status: active / ACTIVE / Active
-10	raw_cancellations	Outlier temporal	days_before_pickup negativo
+2	raw_sessions	Inconsistência de case	device: desktop / DESKTOP / Mobile ;
+3	raw_sessions	Outlier temporal	Sessões > 24h ;
+4	raw_searches	Bot/fraude	65 buscas em < 4 min ;
+5	raw_searches	Anomalia lógica	dropoff_date < pickup_date ;
+6	raw_bookings	Outlier de valor	total_amount negativo, zerado ou > R$15.000 ;
+7	raw_bookings	Fraude potencial	1 user_id com 4 reservas no mesmo dia ;
+8	raw_partners	Duplicatas	Parceiros repetidos ;
+9	raw_partners	Inconsistência de case	status: active / ACTIVE / Active ;
+10	raw_cancellations	Outlier temporal	days_before_pickup negativo.
 
 ✅ Regras de Validação Implementadas
 dbt tests nativos:
