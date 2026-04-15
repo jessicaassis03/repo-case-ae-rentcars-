@@ -65,7 +65,7 @@ Dados contêm duplicatas e outliers intencionais (fraude, valores negativos).
 
 Não foi implementada anonimização avançada de PII (apenas mascaramento básico).
 
-O dashboard foi construído em Power BI; exportado em PDF para entrega.
+O dashboard foi construído em Power BI em sql
 
 Cohort LTV calculado apenas por mês/ano de primeiro acesso; não há granularidade diária.
 
