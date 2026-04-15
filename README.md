@@ -1,9 +1,9 @@
 # repo-case-ae-rentcars-
 Data Engineer Analytics
 
-# 🚗 Rentcars - Case Técnico | Senior Analytics Engineer
+#  Rentcars - Case Técnico | Senior Analytics Engineer
 
-## 📌 Visão Geral
+##  Visão Geral
 
 Este repositório apresenta a solução completa do case técnico da Rentcars, contemplando:
 
@@ -43,7 +43,7 @@ BI / SQL / Analytics
 
 ---
 
-## ▶️ Como Executar
+##  Como Executar
 
 ### Pré-requisitos
 
@@ -69,7 +69,7 @@ dbt docs serve
 
 ---
 
-## 📊 Modelagem
+##  Modelagem
 
 ### Abordagem
 
@@ -89,7 +89,7 @@ Foi adotado **Star Schema**, com:
 
 ---
 
-## 🧪 Qualidade de Dados
+##  Qualidade de Dados
 
 ### Problemas identificados
 
@@ -109,7 +109,7 @@ Foi adotado **Star Schema**, com:
 
 ---
 
-## 📈 Principais Insights
+## Principais Insights
 
 * Taxa de conversão varia significativamente por device
 * Parceiros com maior volume apresentam maior taxa de cancelamento
@@ -118,7 +118,7 @@ Foi adotado **Star Schema**, com:
 
 ---
 
-## 🔐 Governança
+##  Governança
 
 * Definição de SLA de dados
 * Catálogo de métricas
@@ -127,7 +127,7 @@ Foi adotado **Star Schema**, com:
 
 ---
 
-## 🤝 Stakeholders
+##  Stakeholders
 
 Foi realizada simulação com área de **Revenue/Pricing**, com:
 
@@ -138,7 +138,7 @@ Foi realizada simulação com área de **Revenue/Pricing**, com:
 
 ---
 
-## ⚠️ Limitações
+##  Limitações
 
 * Dados simulados com volume limitado
 * Ausência de ingestão em tempo real
@@ -146,7 +146,7 @@ Foi realizada simulação com área de **Revenue/Pricing**, com:
 
 ---
 
-## 🚀 Melhorias Futuras
+##  Melhorias Futuras
 
 * Orquestração com Airflow
 * Monitoramento com alertas
@@ -168,7 +168,7 @@ README.md
 
 ---
 
-## 🎯 Conclusão
+##  Conclusão
 
 A solução foi construída com foco em:
 
@@ -177,4 +177,4 @@ A solução foi construída com foco em:
 * Clareza para o negócio
 * Boas práticas de engenharia de dados
 
-Este projeto demonstra demonstra habilidades técnicas, mas também **visão analítica e alinhamento com stakeholders** — essenciais para um Analytics Engineer Sênior.
+Este projeto demonstra demonstra habilidades técnicas, mas também **visão analítica e alinhamento com stakeholders** 
