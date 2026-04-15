@@ -33,12 +33,12 @@ BI / SQL / Analytics
 
 ---
 
-## ⚙️ Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 
 * dbt
 * SQL (ANSI)
 * dbt-expectations
-* Python (opcional para análise)
+* Python (análise)
 * Power BI / Looker Studio (dashboard)
 
 ---
