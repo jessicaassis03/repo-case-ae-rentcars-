@@ -1,180 +1,97 @@
-# repo-case-ae-rentcars-
-Data Engineer Analytics
+#  Rentcars | Case Técnico — Senior Analytics Engineer
 
-#  Rentcars - Case Técnico | 
+## 🎯 Objetivo
 
-##  Visão Geral
-
-Este repositório apresenta a solução completa do case técnico da Rentcars, contemplando:
-
-* Modelagem de dados com dbt
-* SQL analítico avançado
-* Visualização e storytelling
-* Governança e qualidade de dados
-* Discovery com stakeholders e data contracts
-
-O objetivo foi construir uma solução **escalável, confiável e orientada ao negócio**, tratando inconsistências intencionais nos dados e gerando insights acionáveis.
+Construir uma solução analítica completa a partir de dados brutos com problemas intencionais de qualidade, transformando-os em **informação confiável para tomada de decisão**.
 
 ---
 
-## 🏗️ Arquitetura
+## 🏗️ Arquitetura de Dados
 
 ```
-RAW (CSV)
-  ↓
-STAGING (limpeza + padronização)
-  ↓
-INTERMEDIATE (regras de negócio)
-  ↓
-MARTS (fatos e dimensões)
-  ↓
-BI / SQL / Analytics
+RAW → STAGING → INTERMEDIATE → MARTS → ANALYTICS
 ```
 
----
-
-##  Tecnologias Utilizadas
-
-* dbt
-* SQL (ANSI)
-* dbt-expectations
-* Python (análise)
-* Power BI / Looker Studio (dashboard)
-
----
-
-##  Como Executar
-
-### Pré-requisitos
-
-* Python 3.10+
-* dbt-core
-* Adapter (ex: dbt-postgres / dbt-duckdb)
-
-### Instalação
-
-```bash
-pip install dbt-core dbt-duckdb
-```
-
-### Execução
-
-```bash
-dbt seed
-dbt run
-dbt test
-dbt docs generate
-dbt docs serve
-```
+* **Staging:** limpeza, padronização e deduplicação
+* **Intermediate:** aplicação de regras de negócio
+* **Marts:** modelo analítico (Star Schema)
 
 ---
 
 ##  Modelagem
 
-### Abordagem
-
-Foi adotado **Star Schema**, com:
+### Dimensões
 
 * `dim_users`
 * `dim_partners`
+
+### Fatos
+
 * `fct_sessions`
 * `fct_bookings`
-
-### Decisões
-
-* Modelos incrementais para escalabilidade
-* Deduplicação por chave única
-* Padronização de dados no staging
-* Separação clara entre lógica técnica e de negócio
 
 ---
 
 ##  Qualidade de Dados
 
-### Problemas identificados
+Foram tratados:
 
-* Duplicatas
-* Datas futuras inválidas
-* Inconsistência de países
-* Valores negativos
-* Sessões com comportamento de bot
-* Cancelamentos sem booking
-
-### Soluções
-
-* Testes dbt (nativos + customizados)
-* Validações com dbt-expectations
-* Regras de limpeza no staging
-* Monitoramento de SLA
+* Duplicatas (ROW_NUMBER)
+* Inconsistência de case (UPPER/LOWER)
+* Bots (`is_bot = true`)
+* Datas inválidas
+* Valores negativos e outliers
+* Relacionamentos inválidos
 
 ---
 
-## Principais Insights
+##  Principais Insights
 
-* Taxa de conversão varia significativamente por device
-* Parceiros com maior volume apresentam maior taxa de cancelamento
-* Existem padrões claros de comportamento automatizado (bots)
-* Receita líquida difere significativamente da bruta
+* Alta taxa de cancelamento reduz receita líquida
+* Bots impactam negativamente o funil
+* Conversão varia por device
+* Volume de busca não garante conversão
 
 ---
 
 ##  Governança
 
-* Definição de SLA de dados
+* SLA definido
 * Catálogo de métricas
-* Identificação e tratamento de PII
-* Data contracts para alinhamento com negócio
+* Data contracts
+* Tratamento de PII
 
 ---
 
-##  Stakeholders
+##  Execução
 
-Foi realizada simulação com área de **Revenue/Pricing**, com:
-
-* Levantamento de KPIs
-* Mapeamento AS-IS vs TO-BE
-* Definição de métricas
-* Resolução de conflitos conceituais
-
----
-
-##  Limitações
-
-* Dados simulados com volume limitado
-* Ausência de ingestão em tempo real
-* Não implementação de monitoramento automático
-
----
-
-##  Melhorias Futuras
-
-* Orquestração com Airflow
-* Monitoramento com alertas
-* Camada de feature store
-* Detecção de fraude com ML
-
----
-
-## 📂 Estrutura
-
-```
-dbt/
-sql/
-dashboard/
-stakeholders/
-governance.md
-README.md
+```bash
+dbt seed
+dbt run
+dbt test
 ```
 
 ---
 
-##  Conclusão
+## ⚠️ Assunções
 
-A solução foi construída com foco em:
+* Receita considera apenas bookings `confirmed` e `completed`
+* Bots são excluídos de análises
+* Cancelamentos impactam receita líquida
 
-* Confiabilidade
-* Escalabilidade
-* Clareza para o negócio
-* Boas práticas de engenharia de dados
+---
 
-Este projeto demonstra demonstra habilidades técnicas, mas também **visão analítica e alinhamento com stakeholders** 
+##  Diferenciais
+
+* Modelos incrementais
+* Testes customizados
+* Detecção de fraude
+* Discovery com stakeholders
+
+---
+
+## 📂 Documentação
+
+* `docs/data_dictionary.md`
+* `governance.md`
+* `stakeholders/`
