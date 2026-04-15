@@ -1,0 +1,16 @@
+-- Stakeholders
+
+metrics:
+  - name: conversion_rate
+    definition: "Proporção de sessões que resultam em reservas confirmadas ou concluídas"
+    calculation: "count(bookings_confirmed) / count(sessions)"
+    owner: Produto
+    sla: "Atualização diária até 10h"
+    criticidade: Alta
+
+  - name: ticket_medio
+    definition: "Valor médio das reservas confirmadas"
+    calculation: "avg(total_amount)"
+    owner: Revenue
+    sla: "Atualização diária até 10h"
+    criticidade: Alta
