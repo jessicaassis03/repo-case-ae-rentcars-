@@ -1,7 +1,7 @@
 # repo-case-ae-rentcars-
 Data Engineer Analytics
 
-#  Rentcars - Case Técnico | Senior Analytics Engineer
+#  Rentcars - Case Técnico | 
 
 ##  Visão Geral
 
